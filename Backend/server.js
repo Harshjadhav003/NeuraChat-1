@@ -10,6 +10,12 @@ const PORT = 8080;
 app.use(express.json());
 app.use(cors());
 
+app.use(cors({
+  origin: "http://localhost:5173", // vite
+  methods: ["GET", "POST", "DELETE"],
+  allowedHeaders: ["Content-Type"]
+}));
+
 app.use("/api", chatRoutes);
 
 app.listen(PORT, () => {

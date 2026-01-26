@@ -10,15 +10,12 @@ const getOpenAIAPIResponse = async (message) => {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
           "HTTP-Referer": "http://localhost:5173",
-          "X-Title": "SigmaGPT"
+          "X-Title": "NeuraChat"
         },
         body: JSON.stringify({
-          model: "openai/gpt-3.5-turbo",
+          model: "openai/gpt-4o-mini",
           messages: [
-            {
-              role: "user",
-              content: message
-            }
+            { role: "user", content: message }
           ]
         })
       }
@@ -26,9 +23,8 @@ const getOpenAIAPIResponse = async (message) => {
 
     const data = await response.json();
 
-    // 🛡️ SAFETY CHECK
-    if (!data.choices || data.choices.length === 0) {
-      console.error("OpenRouter error:", data);
+    if (!data?.choices?.length) {
+      console.error("OpenRouter API error:", data);
       return null;
     }
 

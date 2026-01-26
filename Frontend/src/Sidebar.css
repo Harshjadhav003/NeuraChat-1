@@ -40,8 +40,18 @@ button:hover {
 .history {
     margin: 10px;
     padding: 10px;
-    height: 100%;
+    flex: 1;                /* take remaining height */
+    overflow-y: auto;       /* enable scroll */
 }
+.history {
+    scrollbar-width: none;        /* Firefox */
+    -ms-overflow-style: none;     /* IE/Edge */
+}
+
+.history::-webkit-scrollbar {
+    width: 0;
+}
+
 
 .history li {
     list-style-type: none;
