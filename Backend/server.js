@@ -15,7 +15,6 @@ import cors from "cors";
 app.use(cors({
   origin: [
     "http://localhost:5173",
-    "http://localhost:3000",
     "https://neurachat-1-e7ck.onrender.com" //  REAL frontend
   ],
   methods: ["GET", "POST", "DELETE", "PUT", "OPTIONS"],
