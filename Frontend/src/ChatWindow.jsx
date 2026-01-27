@@ -85,7 +85,7 @@ function ChatWindow() {
         <div className="chatWindow">
             <div className="navbar">
                 <span>
-                    NeuraChat <i className="fa-solid fa-chevron-down"></i>
+                    NeuraTeck <i className="fa-solid fa-chevron-down"></i>
                 </span>
                 <div className="userIconDiv" onClick={handleProfileClick}>
                     <span className="userIcon">

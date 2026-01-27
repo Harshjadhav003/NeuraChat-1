@@ -8,13 +8,23 @@ const app = express();
 const PORT = 8080;
 
 app.use(express.json());
-app.use(cors());
+//app.use(cors());
 
+//import cors from "cors";
 app.use(cors({
-  origin: "http://localhost:5173", // vite
-  methods: ["GET", "POST", "DELETE"],
-  allowedHeaders: ["Content-Type"]
+  origin: [
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "https://neurachat-frontend.onrender.com"
+  ],
+  methods: ["GET", "POST", "DELETE", "PUT", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true
 }));
+
+//  VERY IMPORTANT for DELETE
+app.options("*", cors());
+
 
 app.use("/api", chatRoutes);
 
