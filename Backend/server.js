@@ -8,14 +8,11 @@ const app = express();
 const PORT = 8080;
 
 app.use(express.json());
-//app.use(cors());
-
-
 
 app.use(cors({
   origin: [
     "http://localhost:5173",
-    "https://neurachat-1-1.onrender.com" //  REAL frontend
+    "https://neurachat-1-1.onrender.com" //   frontend  link
   ],
   methods: ["GET", "POST", "DELETE", "PUT", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
