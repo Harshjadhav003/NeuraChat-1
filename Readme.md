@@ -1,3 +1,4 @@
+
 🚀 NeuraTeck – AI Integrated Web App
 NeuraTeck is a full-stack AI-powered web application built using the MERN stack. It provides intelligent chat interactions with real-time responses and conversation storage.
 🛠 Tech Stack
