@@ -2,6 +2,7 @@ import "./Sidebar.css";
 import { useContext, useEffect } from "react";
 import { MyContext } from "./MyContext.jsx";
 import { v1 as uuidv1 } from "uuid";
+import { API } from "./api";
 
 function Sidebar() {
     const {
@@ -12,30 +13,16 @@ function Sidebar() {
         setPrompt,
         setReply,
         setCurrThreadId,
-        setPrevChats
+        setPrevChats,
+        handleLogout
     } = useContext(MyContext);
 
     // 🔹 Fetch all threads
     const getAllThreads = async () => {
         try {
-            const response = await fetch(
-                `${import.meta.env.VITE_API_URL}/api/thread`
-            );
+            const res = await API.get("/api/thread");
 
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error("Thread list error:", errorText);
-                return;
-            }
-
-            const data = await response.json();
-
-            if (!Array.isArray(data)) {
-                console.error("Invalid thread list format:", data);
-                return;
-            }
-
-            const filteredData = data.map(thread => ({
+            const filteredData = res.data.map(thread => ({
                 threadId: thread.threadId,
                 title: thread.title,
             }));
@@ -44,6 +31,9 @@ function Sidebar() {
 
         } catch (err) {
             console.error("Fetch threads failed:", err);
+            if (err.response?.status === 401) {
+                handleLogout();
+            }
         }
     };
 
@@ -65,49 +55,26 @@ function Sidebar() {
         setCurrThreadId(newThreadId);
 
         try {
-            const response = await fetch(
-                `${import.meta.env.VITE_API_URL}/api/thread/${newThreadId}`
-            );
+            const res = await API.get(`/api/thread/${newThreadId}`);
+            console.log("Thread messages:", res.data);
 
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error("Thread fetch error:", errorText);
-                return;
-            }
-
-            const data = await response.json();
-            console.log("Thread messages:", data);
-
-            if (!Array.isArray(data)) {
-                console.error("Invalid messages format:", data);
-                return;
-            }
-
-            setPrevChats(data);
+            setPrevChats(res.data);
             setNewChat(false);
             setReply(null);
 
         } catch (err) {
             console.error("Change thread failed:", err);
+            if (err.response?.status === 401) {
+                handleLogout();
+            }
         }
     };
 
     // 🔹 Delete thread
     const deleteThread = async (threadId) => {
         try {
-            const response = await fetch(
-                `${import.meta.env.VITE_API_URL}/api/thread/${threadId}`,
-                { method: "DELETE" }
-            );
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error("Delete thread error:", errorText);
-                return;
-            }
-
-            const data = await response.json();
-            console.log("Delete response:", data);
+            const res = await API.delete(`/api/thread/${threadId}`);
+            console.log("Delete response:", res.data);
 
             // Update UI
             setAllThreads(prev =>
@@ -120,6 +87,9 @@ function Sidebar() {
 
         } catch (err) {
             console.error("Delete thread failed:", err);
+            if (err.response?.status === 401) {
+                handleLogout();
+            }
         }
     };
 
