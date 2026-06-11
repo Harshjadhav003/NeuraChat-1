@@ -3,6 +3,7 @@ import Chat from "./Chat.jsx";
 import { MyContext } from "./MyContext.jsx";
 import { useContext, useState, useEffect } from "react";
 import { ScaleLoader } from "react-spinners";
+import { API } from "./api";
 
 function ChatWindow() {
     const {
@@ -12,11 +13,11 @@ function ChatWindow() {
         setReply,
         currThreadId,
         setPrevChats,
-        setNewChat
+        setNewChat,
+        handleLogout
     } = useContext(MyContext);
 
     const [loading, setLoading] = useState(false);
-    const [isOpen, setIsOpen] = useState(false);
 
     const getReply = async () => {
         if (!prompt.trim()) return;
@@ -27,39 +28,22 @@ function ChatWindow() {
         console.log("message:", prompt, "threadId:", currThreadId);
 
         try {
-            const response = await fetch(
-                `${import.meta.env.VITE_API_URL}/api/chat`,
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        message: prompt,
-                        threadId: currThreadId,
-                    }),
-                }
-            );
+            const res = await API.post("/api/chat", {
+                message: prompt,
+                threadId: currThreadId,
+            });
 
-            //  If backend failed, read text (HTML / error)
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error("Backend error:", errorText);
-                throw new Error("Backend returned error");
-            }
-
-            // Parse JSON safely
-            const data = await response.json();
-            console.log("API response:", data);
-
-            if (data?.reply) {
-                setReply(data.reply);
+            if (res.data?.reply) {
+                setReply(res.data.reply);
             } else {
-                console.error("Invalid response format:", data);
+                console.error("Invalid response format:", res.data);
             }
 
         } catch (err) {
             console.error("Fetch error:", err);
+            if (err.response?.status === 401) {
+                handleLogout();
+            }
         } finally {
             setLoading(false);
         }
@@ -77,37 +61,8 @@ function ChatWindow() {
         setPrompt("");
     }, [reply]);
 
-    const handleProfileClick = () => {
-        setIsOpen(prev => !prev);
-    };
-
     return (
         <div className="chatWindow">
-            <div className="navbar">
-                <span>
-                    NeuraTeck <i className="fa-solid fa-chevron-down"></i>
-                </span>
-                <div className="userIconDiv" onClick={handleProfileClick}>
-                    <span className="userIcon">
-                        <i className="fa-solid fa-user"></i>
-                    </span>
-                </div>
-            </div>
-
-            {isOpen && (
-                <div className="dropDown">
-                    <div className="dropDownItem">
-                        <i className="fa-solid fa-gear"></i> Settings
-                    </div>
-                    <div className="dropDownItem">
-                        <i className="fa-solid fa-cloud-arrow-up"></i> Upgrade plan
-                    </div>
-                    <div className="dropDownItem">
-                        <i className="fa-solid fa-arrow-right-from-bracket"></i> Log out
-                    </div>
-                </div>
-            )}
-
             <Chat />
 
             <ScaleLoader loading={loading} color="#fff" />
