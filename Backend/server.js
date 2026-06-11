@@ -2,41 +2,73 @@ import express from "express";
 import "dotenv/config";
 import cors from "cors";
 import mongoose from "mongoose";
+import helmet from "helmet";
+import cookieParser from "cookie-parser";
+import rateLimit from "express-rate-limit";
+
 import chatRoutes from "./routes/chat.js";
+import { authRoutes } from "./routes/authRoutes.js";
+import { authMiddleware } from "./middlewares/authMiddleware.js";
 
 const app = express();
-const PORT = 8080;
+const PORT = process.env.PORT || 8080;
 
+// Middleware
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(helmet());
 
-app.use(cors({
-  origin: [
-    "http://localhost:5173",
-    "https://neurachat-1-1.onrender.com" //   frontend  link
-  ],
-  methods: ["GET", "POST", "DELETE", "PUT", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "http://127.0.0.1:5173",
+      "https://neurachat-1-1.onrender.com",
+    ],
+    credentials: true,
+  })
+);
 
-app.options("*", cors());
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+});
+
+app.use(limiter);
+
+// Routes
+app.use("/auth", authRoutes);
 
 app.use("/api", chatRoutes);
 
-app.listen(PORT, () => {
-    console.log(`server running on ${PORT}`);
-    connectDB();
+app.get("/", (req, res) => {
+  res.send("Backend running");
 });
 
-const connectDB = async() => {
-    try {
-        await mongoose.connect(process.env.MONGODB_URI);
-        console.log("Connected with Database!");
-    } catch(err) {
-        console.log("Failed to connect with Db", err);
-    }
-}
+// Protected Route Example
+app.get("/api/profile", authMiddleware, (req, res) => {
+  res.json({
+    message: "Protected route",
+    user: req.user,
+  });
+});
 
+// Database
+const connectDB = async () => {
+  try {
+    await mongoose.connect(process.env.MONGODB_URI);
+    console.log("Connected with Database!");
+  } catch (err) {
+    console.log(err);
+    process.exit(1);
+  }
+};
+
+app.listen(PORT, async () => {
+  await connectDB();
+  console.log(`Server running on http://localhost:${PORT}`);
+});
 
 // app.post("/test", async (req, res) => {
 //     const options = {
