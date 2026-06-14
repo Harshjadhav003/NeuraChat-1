@@ -139,7 +139,7 @@ NeuraTeck/
 ### Clone Repository
 
 ```bash
-git clone https://github.com/yourusername/NeuraTeck.git
+git clone https://github.com/Harshjadhav003/NeuraChat-1
 
 cd NeuraTeck
 ```
