@@ -12,6 +12,20 @@ NeuraTeck is a full-stack AI-powered web application that enables users to inter
 
 ---
 
+## 📸 Project Preview
+
+### 🏠 Landing Page
+
+<img src="./screenshots/landing-page.png" width="100%"/>
+
+### 🔐 Authentication
+
+<img src="./screenshots/Authentication-page.png" width="100%"/>
+
+### 🤖 AI Chat
+
+<img src="./screenshots/chat-interface.png" width="100%"/>
+
 ## ✨ Features
 
 ### 🤖 AI-Powered Conversations
