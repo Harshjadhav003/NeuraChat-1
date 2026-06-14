@@ -7,9 +7,24 @@ export const authRoutes = express.Router();
 
 // SIGNUP
 authRoutes.post("/signup", async (req, res) => {
-  console.log("Signup request received:", req.body.email);
   try {
-    const { email, password } = req.body;
+    let { email, password } = req.body;
+
+    email = email.trim().toLowerCase();
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        message: "Invalid email format",
+      });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({
+        message: "Password must be at least 6 characters",
+      });
+    }
 
     const existingUser = await User.findOne({ email });
 
@@ -26,11 +41,11 @@ authRoutes.post("/signup", async (req, res) => {
       password: hashedPassword,
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       message: "Signup successful",
     });
   } catch (err) {
-    res.status(500).json({
+    return res.status(500).json({
       message: err.message,
     });
   }
